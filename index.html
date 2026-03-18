@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EV Charging Slot Booking</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA7Sf7dv-dWt3KN9V2_OOVA3neNTjBQ6WI&callback=initMap"></script>
+
+    <style>
+        /* Modal CSS */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 8px;
+            position: relative;
+        }
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-btn:hover,
+        .close-btn:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .modal-footer {
+            margin-top: 20px;
+            text-align: right;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .booking-form {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .slot-info {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #2ecc71;
+        }
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .time-slot {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .time-slot:hover {
+            border-color: #2ecc71;
+            background: #f0f9f0;
+        }
+        .time-slot.selected {
+            border-color: #2ecc71;
+            background: #2ecc71;
+            color: white;
+        }
+        .time-slot.unavailable {
+            background: #f5f5f5;
+            color: #999;
+            cursor: not-allowed;
+            border-color: #ddd;
+        }
+        .booking-summary {
+            background: #f0f8ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #3498db;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1><i class="fas fa-charging-station"></i> EV Charging Slot Booking</h1>
+    </header>
+
+    <main>
+        <div id="auth-section">
+            <h2><i class="fas fa-user-circle"></i> User Login / Register</h2>
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <i class="fas fa-envelope input-icon"></i>
+                    <input type="email" id="user-email" placeholder="Enter your email" required>
+                </div>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="user-password" placeholder="Enter your password" required>
+                </div>
+            </div>
+            <div class="button-group">
+                <button id="register-btn"><i class="fas fa-user-plus"></i> Register</button>
+                <button id="login-btn"><i class="fas fa-sign-in-alt"></i> Login</button>
+            </div>
+            <a href="#" id="forgot-password-link">Forgot Password?</a>
+            <p id="auth-status"></p>
+        </div>
+
+        <div id="main-content" style="display: none;">
+            <h2><i class="fas fa-home"></i> Welcome!</h2>
+            <p id="logged-in-user"></p>
+            <button id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            
+            <!-- Navigation Buttons -->
+            <div class="nav-buttons">
+                <button id="view-map-btn" class="nav-btn active">
+                    <i class="fas fa-map-marker-alt"></i> View Map
+                </button>
+                <button id="book-slots-btn" class="nav-btn">
+                    <i class="fas fa-calendar-check"></i> Book Slots
+                </button>
+                <button id="booking-history-btn" class="nav-btn">
+                    <i class="fas fa-history"></i> My Bookings
+                </button>
+            </div>
+
+            <!-- Map Section -->
+            <div id="map-section" class="content-section">
+                <h3><i class="fas fa-map-marker-alt"></i> Nearby Charging Bunks</h3>
+                <div id="map">
+                    <div class="loading-message">
+                        <i class="fas fa-spinner fa-spin"></i> Loading map...
+                    </div>
+                </div>
+                <div id="bunk-list"></div>
+            </div>
+
+            <!-- Book Slots Section -->
+            <div id="book-slots-section" class="content-section" style="display: none;">
+                <h3><i class="fas fa-calendar-check"></i> Book Your Charging Slot</h3>
+                <div class="booking-intro">
+                    <p>Select a charging station from the list below to book your slot. You can choose your preferred date and time.</p>
+                </div>
+                <div id="booking-bunk-list"></div>
+            </div>
+
+            <!-- Booking History Section -->
+            <div id="booking-history-section" class="content-section" style="display: none;">
+                <h3><i class="fas fa-history"></i> My Booking History</h3>
+                <div id="booking-history-list">
+                    <p>No bookings found.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Enhanced Booking Modal -->
+    <div id="booking-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" data-modal="booking-modal">&times;</span>
+            <h2><i class="fas fa-calendar-check"></i> Book a Charging Slot</h2>
+            
+            <div id="modal-bunk-details" class="slot-info">
+                <!-- Bunk details will be populated here -->
+            </div>
+
+            <div class="booking-form">
+                <h3>Select Your Booking Details</h3>
+                
+                <div class="form-group">
+                    <label for="booking-date">Select Date:</label>
+                    <input type="date" id="booking-date" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Select Time Slot:</label>
+                    <div class="time-slots" id="time-slots">
+                        <!-- Time slots will be generated here -->
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="vehicle-number">Vehicle Number:</label>
+                    <input type="text" id="vehicle-number" placeholder="Enter your vehicle number" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone-number">Phone Number:</label>
+                    <input type="tel" id="phone-number" placeholder="Enter your phone number" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="booking-notes">Additional Notes (Optional):</label>
+                    <textarea id="booking-notes" rows="3" placeholder="Any special requirements or notes..."></textarea>
+                </div>
+
+                <div class="booking-summary" id="booking-summary" style="display: none;">
+                    <h4>Booking Summary</h4>
+                    <div id="summary-details">
+                        <!-- Summary will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button id="confirm-booking-btn" class="book-btn">
+                    <i class="fas fa-check"></i> Confirm Booking
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Reset Modal -->
+    <div id="password-reset-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" data-modal="password-reset-modal">&times;</span>
+            <h2>Forgot Password</h2>
+            <p>Enter your email to receive a password reset link.</p>
+            <div class="form-group">
+                <label for="reset-email">Email:</label>
+                <input type="email" id="reset-email" placeholder="Enter your email" required>
+            </div>
+            <div class="modal-footer">
+                <button id="send-reset-btn">Send Reset Link</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

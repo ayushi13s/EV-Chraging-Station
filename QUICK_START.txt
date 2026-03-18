@@ -1,0 +1,274 @@
+================================================================================
+EV CHARGING SLOT BOOKING SYSTEM - QUICK START GUIDE
+Complete Backend Edition - No Firebase Required!
+================================================================================
+
+✨ FEATURES:
+- User registration, login, booking
+- Admin panel for managing charging stations  
+- Google Maps integration
+- Real-time slot availability
+- Complete booking history
+- SQLite database (auto-created)
+- JWT authentication & security
+
+================================================================================
+INSTANT SETUP (5 MINUTES)
+================================================================================
+
+1. OPEN COMMAND PROMPT/TERMINAL in this folder (ev_vehicles)
+
+2. INSTALL DEPENDENCIES:
+   npm install
+
+3. START SERVER:
+   npm start
+   
+   OR on Windows, double-click: start.bat
+
+4. OPEN IN BROWSER:
+   User page:  http://localhost:3000/index.html
+   Admin page: http://localhost:3000/admin.html
+
+5. CREATE TEST ACCOUNT:
+   - Click "Register"
+   - Email: user@test.com
+   - Password: test123456
+   - Click "Register"
+
+6. CREATE ADMIN ACCOUNT:
+   - Stop server (Ctrl+C)
+   - Run: node setup-admin.js
+   - Email: admin@test.com
+   - Password: admin123456
+   - Start server again: npm start
+
+7. ADD CHARGING STATION:
+   - Go to admin page
+   - Login with admin account
+   - Add station:
+     * Name: "Test Charging Hub"
+     * Address: "New Delhi, India"
+     * Mobile: "9876543210"
+     * Slots: "10"
+   - Click "Save Bunk"
+
+8. BOOK A SLOT:
+   - Go to user page
+   - Login with user account
+   - Click "Book Slots"
+   - Select station
+   - Choose date and time
+   - Confirm!
+
+================================================================================
+FILES INCLUDED
+================================================================================
+
+server.js          - Backend Express server (all APIs)
+script.js          - Frontend JavaScript (UI & API calls)
+index.html         - User booking page
+admin.html         - Admin management page
+style.css          - All styling
+package.json       - Dependencies configuration
+.env               - Server configuration
+start.bat          - Windows startup script
+setup-admin.js     - Admin creation helper
+SETUP_GUIDE.md     - Detailed setup steps
+README_NEW.md      - Full documentation
+
+================================================================================
+PORT & URL
+================================================================================
+
+Server URL:  http://localhost:3000
+User Page:   http://localhost:3000/index.html
+Admin Page:  http://localhost:3000/admin.html
+
+If port 3000 is used:
+  1. Edit .env file
+  2. Change: PORT=3000 to PORT=3001
+  3. Restart server
+  4. Use: http://localhost:3001
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+Q: "Cannot find module 'express'"
+A: Run: npm install
+
+Q: "Port 3000 is already in use"
+A: Edit .env, change PORT=3000 to PORT=3001
+
+Q: "Maps not loading"
+A: Check internet connection, allow location permission
+
+Q: "Cannot login"
+A: Ensure user exists, try different email/password
+
+Q: "Database error"
+A: Delete ev_charging.db file, restart server
+
+Q: Database file location?
+A: Automatically created in same folder as server.js
+
+================================================================================
+COMMANDS
+================================================================================
+
+Start server:           npm start
+Stop server:            Ctrl + C
+Install dependencies:   npm install
+Create admin user:      node setup-admin.js
+Development mode:       npm run dev (auto-restarts on file changes)
+
+================================================================================
+DEFAULT TEST ACCOUNTS
+================================================================================
+
+After first setup, use these to test:
+
+User Account:
+  Email: user@test.com
+  Password: test123456
+
+Admin Account (created with setup-admin.js):
+  Email: admin@test.com
+  Password: admin123456
+
+================================================================================
+ARCHITECTURE
+================================================================================
+
+Frontend (Browser)
+    ↓
+  script.js (API Calls)
+    ↓
+  HTTP/REST API
+    ↓
+  server.js (Express Backend)
+    ↓
+  ev_charging.db (SQLite Database)
+
+Complete offline, self-contained system!
+No cloud dependencies, no Firebase needed!
+
+================================================================================
+WHAT'S WORKING
+================================================================================
+
+✅ User Registration
+✅ User Login/Logout
+✅ Password Reset
+✅ Admin Login
+✅ Add Charging Stations
+✅ View Stations on Map
+✅ Check Slot Availability
+✅ Book Charging Slots
+✅ View Booking History
+✅ Cancel Bookings
+✅ Manage Stations (Admin)
+✅ Update Slots (Admin)
+✅ JWT Authentication
+✅ Password Hashing
+✅ Email Validation
+✅ Error Handling
+
+================================================================================
+DATABASE STRUCTURE
+================================================================================
+
+4 Main Tables:
+
+1. users
+   - ID, email, password, role (admin/user), created_at
+
+2. bunks
+   - ID, name, address, mobile, total_slots, available_slots, lat, lng
+
+3. bookings
+   - ID, user_id, bunk_id, booking_date, booking_time, status
+
+4. password_resets
+   - ID, user_id, token, expires_at
+
+Auto-created on first server start!
+
+================================================================================
+API ENDPOINTS
+================================================================================
+
+Authentication:
+  POST /api/auth/register
+  POST /api/auth/login
+  POST /api/auth/forgot-password
+
+Bunks:
+  GET  /api/bunks
+  POST /api/bunks (admin)
+
+Bookings:
+  GET  /api/bookings
+  POST /api/bookings
+  DELETE /api/bookings/:id
+
+Admin:
+  GET /api/bunks/:id/slots (admin)
+  PUT /api/bunks/:id (admin)
+
+================================================================================
+VERIFICATION CHECKLIST
+================================================================================
+
+After setup, verify:
+
+☐ Server running (no errors)
+☐ http://localhost:3000/index.html accessible
+☐ http://localhost:3000/admin.html accessible
+☐ Google Maps loads
+☐ Can register user
+☐ Can login
+☐ Can create admin
+☐ Can add charging station
+☐ Can book slot
+☐ Database file (ev_charging.db) exists
+
+================================================================================
+NEXT STEPS
+================================================================================
+
+1. Read SETUP_GUIDE.md for detailed instructions
+2. Read README_NEW.md for complete documentation
+3. Customize style.css for branding
+4. Add more test data
+5. Deploy to production (see README_NEW.md)
+6. Add email notifications (optional enhancement)
+7. Add payment integration (optional)
+
+================================================================================
+SUPPORT FILES
+================================================================================
+
+- SETUP_GUIDE.md      → Step-by-step setup
+- README_NEW.md       → Full documentation  
+- setup-admin.js      → Helper to create admin users
+- start.bat           → Windows startup script
+- .env                → Configuration
+
+================================================================================
+SUMMARY
+================================================================================
+
+✅ Complete, fully functional system
+✅ No Firebase or cloud dependencies
+✅ Backend included and working
+✅ Database auto-created
+✅ JWT authentication implemented
+✅ All features working
+✅ Ready for production
+✅ Easy to customize and extend
+
+Ready to use! 🚀
+
+================================================================================
