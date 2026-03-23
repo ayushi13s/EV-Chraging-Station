@@ -39,3 +39,13 @@ tmp/
 *.backup
 *.bak
 *~
+
+# Secrets and keys (do not commit credentials)
+*.key
+*.pem
+*.p12
+*.csr
+*.crt
+.env
+.env.*
+
